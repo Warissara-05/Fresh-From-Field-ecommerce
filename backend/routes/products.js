@@ -6,7 +6,19 @@ const router = express.Router();
 const dbPath = path.join(__dirname, '../data/products.db');
 const db = new sqlite3.Database(dbPath);
 
-// GET สินค้าตามหมวดหมู่ (หรือทั้งหมด)
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    discount_price REAL,
+    image TEXT,
+    category TEXT
+  )
+`);
+
+
 router.get('/', (req, res) => {
   const category = req.query.category;
   let sql = "SELECT * FROM products";
@@ -18,12 +30,15 @@ router.get('/', (req, res) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if  (err)  { 
+      console.error(err);
+      return res.status(500).json({ error: err.message });
+    }
     res.json(rows);
   });
 });
 
-// POST สินค้าใหม่
+
 router.post('/', (req, res) => {
   const { name, price, discount_price, image, category } = req.body;
   db.run(
@@ -36,7 +51,7 @@ router.post('/', (req, res) => {
   );
 });
 
-// PUT แก้ไขสินค้า
+
 router.put('/:id', (req, res) => {
   const { name, price, discount_price, image, category } = req.body;
   const { id } = req.params;
@@ -50,7 +65,7 @@ router.put('/:id', (req, res) => {
   );
 });
 
-// DELETE ลบสินค้า
+
 router.delete('/:id', (req, res) => {
   db.run("DELETE FROM products WHERE id = ?", [req.params.id], function (err) {
     if (err) return res.status(500).json({ error: err.message });
@@ -59,3 +74,7 @@ router.delete('/:id', (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
