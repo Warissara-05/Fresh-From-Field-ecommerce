@@ -1,35 +1,61 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();  // ใช้ sqlite3 library
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-
 const router = express.Router();
 
-// เชื่อมต่อกับฐานข้อมูล SQLite
-const db = new sqlite3.Database(path.join(__dirname, '../db/products.db'), (err) => {
-  if (err) {
-    console.error('❌ Error connecting to SQLite database:', err.message);
-  } else {
-    console.log('✅ Connected to SQLite database');
-  }
-});
+const dbPath = path.join(__dirname, '../data/products.db');
+const db = new sqlite3.Database(dbPath);
 
-// API ดึงข้อมูลสินค้าตามหมวดหมู่
+// GET สินค้าตามหมวดหมู่ (หรือทั้งหมด)
 router.get('/', (req, res) => {
-  const category = req.query.category || 'All';  // กำหนดหมวดหมู่เริ่มต้นเป็น All
-  let sql = 'SELECT * FROM products';
+  const category = req.query.category;
+  let sql = "SELECT * FROM products";
   const params = [];
 
   if (category && category !== 'All') {
-    sql += ' WHERE category = ?';  // กรองข้อมูลตามหมวดหมู่ที่เลือก
+    sql += " WHERE category = ?";
     params.push(category);
   }
 
   db.all(sql, params, (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);  // ส่งข้อมูลสินค้าในรูปแบบ JSON
+    res.json(rows);
   });
 });
 
-module.exports = router;  // ส่งออก router
+// POST สินค้าใหม่
+router.post('/', (req, res) => {
+  const { name, price, discount_price, image, category } = req.body;
+  db.run(
+    "INSERT INTO products (name, price, discount_price, image, category) VALUES (?, ?, ?, ?, ?)",
+    [name, price, discount_price, image, category],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ id: this.lastID });
+    }
+  );
+});
 
+// PUT แก้ไขสินค้า
+router.put('/:id', (req, res) => {
+  const { name, price, discount_price, image, category } = req.body;
+  const { id } = req.params;
+  db.run(
+    "UPDATE products SET name = ?, price = ?, discount_price = ?, image = ?, category = ? WHERE id = ?",
+    [name, price, discount_price, image, category, id],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ updated: this.changes });
+    }
+  );
+});
 
+// DELETE ลบสินค้า
+router.delete('/:id', (req, res) => {
+  db.run("DELETE FROM products WHERE id = ?", [req.params.id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ deleted: this.changes });
+  });
+});
+
+module.exports = router;
