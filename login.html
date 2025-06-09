@@ -129,8 +129,7 @@
    try {
     let response = await ajax(config);
     console.log(response);
-    
-     // ✅ เช็กสถานะ login ที่นี่เลย
+
       if (response.message === 'Login successfully.') {
         localStorage.setItem('isLoggedIn', 'true'); // จำเป็น ✅
         alert("Login successful.");
