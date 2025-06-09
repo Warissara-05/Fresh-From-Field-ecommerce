@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/cart.css">
+	
   </head>
   <body class="goto-here">
 		<div class="py-1 bg-primary">
@@ -93,67 +95,30 @@
       </div>
     </div>
 
-    <section class="ftco-section ftco-cart">
+    <section class="cart-section">
 			<div class="container">
 				<div class="row">
     			<div class="col-md-12 ftco-animate">
     				<div class="cart-list">
-	    				<table class="table">
+	    				<table class="table table-bordered text-center">
 						    <thead class="thead-primary">
 						      <tr class="text-center">
-						        <th>&nbsp;</th>
-						        <th>&nbsp;</th>
+								<th>&nbsp;</th>
 						        <th>Product name</th>
 						        <th>Price</th>
 						        <th>Quantity</th>
 						        <th>Total</th>
+								<th>Remove</th>
 						      </tr>
 						    </thead>
-						    <tbody>
-						      <tr class="text-center">
-						        <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
-						        
-						        <td class="image-prod"><div class="img" style="background-image:url(images/product-3.jpg);"></div></td>
-						        
-						        <td class="product-name">
-						        	<h3>Bell Pepper</h3>
-						        	<p>Far far away, behind the word mountains, far from the countries</p>
-						        </td>
-						        
-						        <td class="price">$4.90</td>
-						        
-						        <td class="quantity">
-						        	<div class="input-group mb-3">
-					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-					          	</div>
-					          </td>
-						        
-						        <td class="total">$4.90</td>
-						      </tr><!-- END TR-->
-
-						      <tr class="text-center">
-						        <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
-						        
-						        <td class="image-prod"><div class="img" style="background-image:url(images/product-4.jpg);"></div></td>
-						        
-						        <td class="product-name">
-						        	<h3>Bell Pepper</h3>
-						        	<p>Far far away, behind the word mountains, far from the countries</p>
-						        </td>
-						        
-						        <td class="price">$15.70</td>
-						        
-						        <td class="quantity">
-						        	<div class="input-group mb-3">
-					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-					          	</div>
-					          </td>
-						        
-						        <td class="total">$15.70</td>
-						      </tr><!-- END TR-->
+						    <tbody id="cart-table-body">
+						     <!-- Items will be inserted here -->
 						    </tbody>
 						  </table>
-					  </div>
+						<div class="text-right">
+							<h4>Total Price: <span id="cart-total">฿0</span></h4>
+						</div>
+					</div>
     			</div>
     		</div>
     		<div class="row justify-content-end">
@@ -334,40 +299,82 @@
   <script src="js/main.js"></script>
 
   <script>
-		$(document).ready(function(){
 
-		var quantitiy=0;
-		   $('.quantity-right-plus').click(function(e){
-		        
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		            
-		            $('#quantity').val(quantity + 1);
+	function renderCart() {
+	const tbody = document.getElementById('cart-table-body');
+	const totalPriceEl = document.getElementById('cart-total');
+	const cartContainer = document.getElementById('cart-container');
+	tbody.innerHTML = '';
 
-		          
-		            // Increment
-		        
-		    });
+	let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
 
-		     $('.quantity-left-minus').click(function(e){
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		      
-		            // Increment
-		            if(quantity>0){
-		            $('#quantity').val(quantity - 1);
-		            }
-		    });
-		    
+	// กรองข้อมูลที่ไม่มีชื่อหรือราคาหรือรูปภาพ
+	cartItems = cartItems.filter(item =>
+	item && item.name && item.price !== null && item.image
+	);
+
+	localStorage.setItem('cart', JSON.stringify(cartItems)); // อัปเดต localStorage ใหม่หลังกรอง
+
+	if (cartItems.length === 0) {
+    cartContainer.innerHTML = '<p class="text-center">ยังไม่มีสินค้าในตะกร้า</p>';
+    totalPriceEl.textContent = '฿0.00';
+    return;
+  }
+
+	let total = 0;
+
+	cartItems.forEach((item, index) => {
+		const itemTotal = item.price * item.quantity;
+		total += itemTotal;
+
+		const tr = document.createElement('tr');
+		tr.innerHTML = `
+		<td><img src="${item.image}" width="70" height="70"></td>
+		<td>${item.name}</td>
+		<td>฿${item.price.toFixed(2)}</td>
+		<td>
+			<input type="number" value="${item.quantity}" min="1" class="form-control quantity-input" data-index="${index}">
+		</td>
+		<td>฿${itemTotal.toFixed(2)}</td>
+		<td><button class="btn btn-danger btn-sm remove-item" data-index="${index}">x</button></td>
+		`;
+		tbody.appendChild(tr);
+	});
+
+	totalPriceEl.textContent = `฿${total.toFixed(2)}`;
+	}
+
+
+		// เปลี่ยนจำนวนสินค้า
+		document.addEventListener('change', function (e) {
+			if (e.target.classList.contains('quantity-input')) {
+			const index = e.target.getAttribute('data-index');
+			const newQty = parseInt(e.target.value);
+
+			let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+			if (newQty >= 1) {
+				cartItems[index].quantity = newQty;
+				localStorage.setItem('cart', JSON.stringify(cartItems));
+				renderCart();
+			}
+			}
 		});
+
+		// ลบสินค้า
+		document.addEventListener('click', function (e) {
+			if (e.target.classList.contains('remove-item')) {
+			const index = e.target.getAttribute('data-index');
+			let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+			cartItems.splice(index, 1);
+			localStorage.setItem('cart', JSON.stringify(cartItems));
+			renderCart();
+			}
+		});
+
+		// โหลดตะกร้าครั้งแรก
+		renderCart();
+
+
 	</script>
     
   </body>

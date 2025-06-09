@@ -152,7 +152,7 @@
 	          		<p style="color: #000;">600 kg available</p>
 	          	</div>
           	</div>
-          	<p><a href="cart.html" class="btn btn-black py-3 px-5">Add to Cart</a></p>
+          	<p><a href="cart.html" onclick='addToCart()' class="btn btn-black py-3 px-5">Add to Cart</a></p>
     			</div>
     		</div>
     	</div>
@@ -403,40 +403,105 @@
   <script src="js/main.js"></script>
 
   <script>
-		$(document).ready(function(){
 
-		var quantitiy=0;
-		   $('.quantity-right-plus').click(function(e){
-		        
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		            
-		            $('#quantity').val(quantity + 1);
+ 	document.addEventListener("DOMContentLoaded", () => {
+    const categoryButtons = document.querySelectorAll(".product-category a");
 
-		          
-		            // Increment
-		        
-		    });
+    categoryButtons.forEach(button => {
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        categoryButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        loadProducts(button.textContent.trim());
+      });
+    });
 
-		     $('.quantity-left-minus').click(function(e){
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		      
-		            // Increment
-		            if(quantity>0){
-		            $('#quantity').val(quantity - 1);
-		            }
-		    });
-		    
-		});
+    loadProducts('All');
+  });
+
+  async function loadProducts(category) {
+    try {
+      const response = await fetch(`http://localhost:2000/api/products?category=${category}`);
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('API Error:', error);
+        alert('Error loading products: ' + (error.error || response.statusText));
+        return;
+      }
+      const products = await response.json();
+      const container = document.getElementById("products-row");
+      container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center">No products found.</div>';
+      }
+
+      products.forEach(p => {
+        console.log(p);
+        container.innerHTML += `
+          <div class="col-md-6 col-lg-3 ftco-animate">
+            <div class="product">
+              <a href="#" class="img-prod">
+                <img class="img-fluid" src="images/${p.image}" alt="${p.name}">
+                ${p.discount_price ? '<span class="status">Sale</span>' : ''}
+                <div class="overlay"></div>
+              </a>
+              <div class="text py-3 pb-4 px-3 text-center">
+                <h3><a href="#">${p.name}</a></h3>
+                <div class="d-flex">
+                  <div class="pricing">
+                    <p class="price">
+                      ${p.discount_price ? `<span class="mr-2 price-dc">$${p.price}</span><span class="price-sale">$${p.discount_price}</span>` : `$${p.price}`}
+                    </p>
+                  </div>
+                </div>
+                <div class="bottom-area d-flex px-3">
+                  <div class="m-auto d-flex">
+                    <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center"><span><i class="ion-ios-menu"></i></span></a>
+                    <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1"><span><i class="ion-ios-cart"></i></span></a>
+                    <a href="#" class="heart d-flex justify-content-center align-items-center "><span><i class="ion-ios-heart"></i></span></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      });
+    } catch (err) {
+      console.error('Fetch error:', err);
+      alert('Network error loading products.');
+    }
+  }
+
+	function addToCart(product) {
+      /*const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn !== 'true') {
+        alert('กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าในตะกร้า');
+        window.location.href = 'login.html';
+        return;
+      }*/
+
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      const existingIndex = cart.findIndex(item => item.id === product.id);
+      const price = product.discount_price || product.price; 
+      const imagePath = `images/${product.image}`;
+
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+      } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: price,
+            image: imagePath,
+            quantity: 1
+          });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('เพิ่มสินค้าลงตะกร้าเรียบร้อย!');
+    }
+
 	</script>
     
   </body>

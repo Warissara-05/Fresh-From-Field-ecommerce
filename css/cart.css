@@ -1,0 +1,25 @@
+  td img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover; /* ครอบภาพให้พอดีช่อง */
+    display: block;
+    margin: 0 auto; /* จัดให้อยู่กลาง */
+  }
+
+  td {
+    vertical-align: middle; /* จัดให้ทุกแถวตรงกลางแนวตั้ง */
+    text-align: center; /* จัดให้อยู่กลางแนวนอน */
+  }
+
+  input.quantity-input {
+    width: 80px;
+    margin: 0 auto;
+  }
+  
+  .remove-item{
+    background-color: rgb(228, 42, 42);
+    border: 0;
+    border-radius: 0%;
+    padding-block: revert;
+  }
+
