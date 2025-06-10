@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, '..')));
 
 app.use('/api/register', require('./routes/register.js'));
 app.use('/api/login', require('./routes/login.js'));
-
+app.use('/api/subscribe', require('./routes/subscribe.js'));
 
 app.use('/api/products', require('./routes/products.js'));
 
