@@ -10,5 +10,11 @@
     "lname": "Pang",
     "email": "aaaaa@gmail.com",
     "password": "1111"
+  },
+  {
+    "fname": "A",
+    "lname": "B",
+    "email": "P@gmail.com",
+    "password": "2222"
   }
 ]

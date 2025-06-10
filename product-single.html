@@ -73,7 +73,7 @@
 	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
 	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
+	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
 
 	        </ul>
 	      </div>
@@ -501,6 +501,20 @@
       localStorage.setItem('cart', JSON.stringify(cart));
       alert('เพิ่มสินค้าลงตะกร้าเรียบร้อย!');
     }
+
+  	function updateCartCount() {
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    
+    const cartCountEl = document.getElementById('cart-count');
+    if (cartCountEl) {
+      cartCountEl.textContent = totalCount;
+		}
+	}
+
+  	document.addEventListener('DOMContentLoaded', () => {
+    updateCartCount();
+  	});
 
 	</script>
     

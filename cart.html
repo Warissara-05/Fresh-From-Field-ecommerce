@@ -75,7 +75,7 @@
 	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
 	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
+	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
 			  <li class="nav-item"><a href="login.html" class="nav-link">Login</a></li>
 
 	        </ul>
@@ -121,60 +121,26 @@
 					</div>
     			</div>
     		</div>
-    		<div class="row justify-content-end">
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Coupon Code</h3>
-    					<p>Enter your coupon code if you have one</p>
-  						<form action="#" class="info">
-	              <div class="form-group">
-	              	<label for="">Coupon code</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	            </form>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
-    			</div>
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Estimate shipping and tax</h3>
-    					<p>Enter your destination to get a shipping estimate</p>
-  						<form action="#" class="info">
-	              <div class="form-group">
-	              	<label for="">Country</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">State/Province</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">Zip/Postal Code</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	            </form>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Estimate</a></p>
-    			</div>
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+    			
+    			<div class="col-lg-4 mt-md-5 cart-wrap ftco-animate">
     				<div class="cart-total mb-3">
     					<h3>Cart Totals</h3>
     					<p class="d-flex">
     						<span>Subtotal</span>
-    						<span>$20.60</span>
+    						<span id="cart-subtotal-details" style="font-size: 14px;"></span>
     					</p>
     					<p class="d-flex">
     						<span>Delivery</span>
-    						<span>$0.00</span>
+    						<span>฿0.00</span>
     					</p>
     					<p class="d-flex">
     						<span>Discount</span>
-    						<span>$3.00</span>
+    						<span>฿3.00</span>
     					</p>
     					<hr>
     					<p class="d-flex total-price">
     						<span>Total</span>
-    						<span>$17.60</span>
+    						<span id="cart-total-summary">฿0.00</span>
     					</p>
     				</div>
     				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
@@ -304,6 +270,8 @@
 	const tbody = document.getElementById('cart-table-body');
 	const totalPriceEl = document.getElementById('cart-total');
 	const cartContainer = document.getElementById('cart-container');
+	const subtotalDetailsEl = document.getElementById('cart-subtotal-details');
+	const totalSummaryEl = document.getElementById('cart-total-summary');
 	tbody.innerHTML = '';
 
 	let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
@@ -318,14 +286,18 @@
 	if (cartItems.length === 0) {
     cartContainer.innerHTML = '<p class="text-center">ยังไม่มีสินค้าในตะกร้า</p>';
     totalPriceEl.textContent = '฿0.00';
+	subtotalDetailsEl.innerHTML = '';
+	totalSummaryEl.textContent = '฿0.00';
     return;
   }
 
 	let total = 0;
+	let subtotalDetailsHTML = '';
 
 	cartItems.forEach((item, index) => {
 		const itemTotal = item.price * item.quantity;
 		total += itemTotal;
+		subtotalDetailsHTML += `<div>${item.name} x ${item.quantity} = ฿${itemTotal.toFixed(2)}</div>`;
 
 		const tr = document.createElement('tr');
 		tr.innerHTML = `
@@ -342,6 +314,9 @@
 	});
 
 	totalPriceEl.textContent = `฿${total.toFixed(2)}`;
+	subtotalDetailsEl.innerHTML = subtotalDetailsHTML;
+	totalSummaryEl.textContent = `฿${total.toFixed(2)}`;
+
 	}
 
 
@@ -373,6 +348,21 @@
 
 		// โหลดตะกร้าครั้งแรก
 		renderCart();
+		updateCartCount();
+
+		function updateCartCount() {
+			const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+			const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+			
+			const cartCountEl = document.getElementById('cart-count');
+			if (cartCountEl) {
+			cartCountEl.textContent = totalCount;
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			updateCartCount();
+		});
 
 
 	</script>

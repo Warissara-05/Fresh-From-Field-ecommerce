@@ -82,7 +82,7 @@
 	  </nav>
 
   <div class="container mt-5">
-    <h2 class="text-center">Login</h2>
+    <h2 class="text-center">SING IN</h2>
     <form action="login_process.php" method="post" class="mx-auto" style="max-width: 400px;">
       <div class="form-group">
         <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
@@ -135,7 +135,7 @@
         alert("Login successful.");
         window.location.href = 'shop.html';
       } else {
-        alert(response.message);
+        alert(response.message || "Login failed.");
       }
     } catch (error) {
       console.error("Login error:", error);

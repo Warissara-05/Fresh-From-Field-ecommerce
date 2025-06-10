@@ -73,7 +73,7 @@
 	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
 	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
+	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
 			  <li class="nav-item"><a href="login.html" class="nav-link">Login</a></li>
 
 	        </ul>
@@ -358,41 +358,20 @@
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
 
-  <script>
-		$(document).ready(function(){
+	<script>
+	function updateCartCount() {
+		const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+		const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+		
+		const cartCountEl = document.getElementById('cart-count');
+		if (cartCountEl) {
+		cartCountEl.textContent = totalCount;
+		}
+	}
 
-		var quantitiy=0;
-		   $('.quantity-right-plus').click(function(e){
-		        
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		            
-		            $('#quantity').val(quantity + 1);
-
-		          
-		            // Increment
-		        
-		    });
-
-		     $('.quantity-left-minus').click(function(e){
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		      
-		            // Increment
-		            if(quantity>0){
-		            $('#quantity').val(quantity - 1);
-		            }
-		    });
-		    
-		});
+	document.addEventListener('DOMContentLoaded', () => {
+		updateCartCount();
+	});
 	</script>
     
   </body>
