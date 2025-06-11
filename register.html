@@ -150,7 +150,10 @@
         return;
         }
 
-        alert(response.status || "Login successful.");
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        users.push({ fname, lname, email });
+        localStorage.setItem('users', JSON.stringify(users));
+        alert(response.status || "Registration successful.");
 
         }
 

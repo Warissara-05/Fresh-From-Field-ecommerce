@@ -131,11 +131,12 @@
     console.log(response);
 
       if (response.message === 'Login successfully.') {
-        localStorage.setItem('isLoggedIn', 'true'); // จำเป็น ✅
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('loggedInUserEmail', username);
         alert("Login successful.");
-        window.location.href = 'shop.html';
+        window.location.href = 'index.html';
       } else {
-        alert(response.message || "Login failed.");
+        alert(response.message);
       }
     } catch (error) {
       console.error("Login error:", error);

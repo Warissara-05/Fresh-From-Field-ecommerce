@@ -74,6 +74,7 @@
 	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
 	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
+		      <li class="nav-item"><a href="login.html" class="nav-link" id="login-btn"><span class="icon-login"></span>Login</a></li>
 
 	        </ul>
 	      </div>
@@ -480,7 +481,7 @@
         return;
       }*/
 
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
 
       const existingIndex = cart.findIndex(item => item.id === product.id);
       const price = product.discount_price || product.price; 
@@ -498,12 +499,12 @@
           });
       }
 
-      localStorage.setItem('cart', JSON.stringify(cart));
+      sessionStorage.setItem('cart', JSON.stringify(cart));
       alert('เพิ่มสินค้าลงตะกร้าเรียบร้อย!');
     }
 
   	function updateCartCount() {
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
     const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     
     const cartCountEl = document.getElementById('cart-count');
@@ -515,6 +516,35 @@
   	document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
   	});
+
+	 document.addEventListener('DOMContentLoaded', () => {
+		const loginBtn = document.getElementById('login-btn'); 
+		const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+		const userEmail = sessionStorage.getItem('loggedInUserEmail');
+
+		console.log("isLoggedIn:", isLoggedIn);
+		console.log("userEmail:", userEmail);
+
+		if (isLoggedIn && userEmail) {
+			fetch('http://localhost:2000/api/users')
+			.then(response => response.json())
+			.then(users => {
+				const user = users.find(u => u.email === userEmail);
+				if (user) {
+				loginBtn.innerHTML = `<span class="icon-login"></span>${user.fname}`;
+				loginBtn.href = "#"; 
+				} else {
+				loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+				}
+			})
+			.catch(err => {
+				console.error('Error loading user data:', err);
+				loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+			});
+		} else {
+			loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+		}
+	});
 
 	</script>
     

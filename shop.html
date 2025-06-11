@@ -68,7 +68,7 @@
 	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
 	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
-			  <li class="nav-item"><a href="login.html" class="nav-link">Login</a></li>
+			      <li class="nav-item"><a href="login.html" class="nav-link" id="login-btn"><span class="icon-login"></span>Login</a></li>
 
 	        </ul>
 	      </div>
@@ -237,7 +237,8 @@
   
   
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+
+  document.addEventListener("DOMContentLoaded", () => {
     const categoryButtons = document.querySelectorAll(".product-category a");
 
     categoryButtons.forEach(button => {
@@ -261,6 +262,7 @@
         alert('Error loading products: ' + (error.error || response.statusText));
         return;
       }
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
       const products = await response.json();
       const container = document.getElementById("products-row");
       container.innerHTML = '';
@@ -291,7 +293,7 @@
                 <div class="bottom-area d-flex px-3">
                   <div class="m-auto d-flex">
                     <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center"><span><i class="ion-ios-menu"></i></span></a>
-                    <a href="#" onclick='addToCart(${JSON.stringify(p)})' class="buy-now d-flex justify-content-center align-items-center mx-1"><span><i class="ion-ios-cart"></i></span></a>
+                    <a href="#" ${isLoggedIn ? `onclick='addToCart(${JSON.stringify(p)})'` : `onclick='redirectToLogin()'`} class="buy-now d-flex justify-content-center align-items-center mx-1"><span><i class="ion-ios-cart"></i></span></a>
                     <a href="#" class="heart d-flex justify-content-center align-items-center "><span><i class="ion-ios-heart"></i></span></a>
                   </div>
                 </div>
@@ -305,17 +307,16 @@
     }
   }
 
+    function redirectToLogin() {
+      alert('กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าในตะกร้า');
+      window.location.href = 'login.html';
+    }
       // ฟังก์ชันเพิ่มสินค้าไปยังตะกร้า
       async function addToCart(product) {
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      console.log('isLoggedIn:', localStorage.getItem('isLoggedIn'));
-      if (isLoggedIn !== 'true') {
-        alert('กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าในตะกร้า');
-        window.location.href = 'login.html';
-        return;
-      }
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+      console.log('isLoggedIn:', sessionStorage.getItem('isLoggedIn'));
 
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
 
       const existingIndex = cart.findIndex(item => item.id === product.id);
       const price = product.discount_price || product.price; 
@@ -333,7 +334,7 @@
           });
       }
 
-      localStorage.setItem('cart', JSON.stringify(cart));
+      sessionStorage.setItem('cart', JSON.stringify(cart));
       alert('เพิ่มสินค้าลงตะกร้าเรียบร้อย!');
       updateCartCount();
     }
@@ -341,7 +342,7 @@
       // addToCart({ id: 1, name: "แครอท", price: 25.00, image: "img/carrot.jpg" }); 
 
       function updateCartCount() {
-      const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+      const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
       const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
       const cartCountEl = document.getElementById('cart-count');
@@ -354,6 +355,35 @@
       updateCartCount();
     });
 
+  document.addEventListener('DOMContentLoaded', () => {
+		const loginBtn = document.getElementById('login-btn'); 
+		const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+		const userEmail = sessionStorage.getItem('loggedInUserEmail');
+
+		console.log("isLoggedIn:", isLoggedIn);
+		console.log("userEmail:", userEmail);
+
+		if (isLoggedIn && userEmail) {
+			fetch('http://localhost:2000/api/users')
+			.then(response => response.json())
+			.then(users => {
+				const user = users.find(u => u.email === userEmail);
+				if (user) {
+				loginBtn.innerHTML = `<span class="icon-login"></span>${user.fname}`;
+				loginBtn.href = "#"; 
+				} else {
+				loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+				}
+			})
+			.catch(err => {
+				console.error('Error loading user data:', err);
+				loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+			});
+		} else {
+			loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+		}
+	});
+    
     </script>
   </body>
 </html>

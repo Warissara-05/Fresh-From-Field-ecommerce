@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const path = require('path');
+const path = require('path')
+const fs = require('fs');
+
 
 const app = express();
 const PORT = 2000;
@@ -26,3 +28,16 @@ app.listen(PORT, () => {
     console.log("Server running at http://localhost:"+PORT);
 })
 
+app.get('/api/users', (req, res) => {
+  const filePath = path.join(__dirname, 'data/user.json');
+  fs.readFile(filePath, 'utf-8', (err, data) => {
+    if (err) return res.status(500).json({ message: 'Error reading user data.' });
+
+    try {
+      const users = JSON.parse(data);
+      res.json(users);
+    } catch (e) {
+      res.status(500).json({ message: 'Corrupted user data.' });
+    }
+  });
+});
