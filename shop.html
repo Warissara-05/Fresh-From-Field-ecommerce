@@ -311,7 +311,7 @@
   }
 
     function redirectToLogin() {
-      alert('กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าในตะกร้า');
+      alert('Please log in before adding items to the cart.');
       window.location.href = 'login.html';
     }
       // ฟังก์ชันเพิ่มสินค้าไปยังตะกร้า
@@ -338,7 +338,7 @@
       }
 
       sessionStorage.setItem('cart', JSON.stringify(cart));
-      alert('เพิ่มสินค้าลงตะกร้าเรียบร้อย!');
+      alert('Item added to cart successfully!');
       updateCartCount();
     }
       // ตัวอย่างการใช้งาน
