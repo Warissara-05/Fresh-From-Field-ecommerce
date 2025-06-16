@@ -364,6 +364,76 @@
 		updateCartCount();
 	});
 
+	async function submitOrder() {
+    const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const email = sessionStorage.getItem('loggedInUserEmail');
+
+    if (cart.length === 0) {
+      alert("ไม่มีสินค้าในตะกร้า");
+      return;
+    }
+
+    if (!email) {
+      alert("กรุณาเข้าสู่ระบบก่อนทำการสั่งซื้อ");
+      return;
+    }
+
+    const total_price = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    // 🔧 ใส่ชื่อผู้ใช้แบบจำลอง (หรือให้กรอกในฟอร์มก็ได้)
+    const customer_name = "ลูกค้าไม่มีชื่อ";
+
+    const orderData = {
+      customer_name,
+      email,
+      total_price,
+      items: cart
+    };
+
+    try {
+      const response = await fetch("http://localhost:2000/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert("เกิดข้อผิดพลาด: " + (error.error || "ไม่สามารถสั่งซื้อได้"));
+        return;
+      }
+
+      const result = await response.json();
+      alert("สั่งซื้อสำเร็จ! เลขที่คำสั่งซื้อ #" + result.order_id);
+
+      // เคลียร์ตะกร้าหลังสั่งซื้อ
+      sessionStorage.removeItem('cart');
+      updateCartCount();
+
+      // เปลี่ยนหน้า หรือแสดงข้อความต่อก็ได้
+      window.location.href = "order-confirmation.html";
+
+    } catch (error) {
+      console.error("Checkout Error:", error);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+    }
+  }
+
+  function updateCartCount() {
+    const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCountEl = document.getElementById('cart-count');
+    if (cartCountEl) {
+      cartCountEl.textContent = totalCount;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    updateCartCount();
+  });
+
 	 document.addEventListener('DOMContentLoaded', () => {
 		const loginBtn = document.getElementById('login-btn'); 
 		const isLoggedIn = sessionStorage.getItem('isLoggedIn');
@@ -392,6 +462,7 @@
 			loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
 		}
 	});
+
 	</script>
     
   </body>
