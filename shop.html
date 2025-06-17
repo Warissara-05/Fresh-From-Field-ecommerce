@@ -92,6 +92,11 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-10 mb-5 text-center">
+        <div class="mb-3">
+          <input type="text" id="searchBox" placeholder="Search products..." class="form-control w-50 mx-auto mb-2">
+            <button onclick="searchProducts()" class="btn btn-primary">Search</button>
+        </div>
+
         <ul class="product-category">
           <li><a href="#" class="active">All</a></li>
           <li><a href="#">Vegetables</a></li>
@@ -238,7 +243,11 @@
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
   
-  
+  <input type="text" id="searchBox" placeholder="ค้นหาสินค้า...">
+  <button onclick="searchProducts()">ค้นหา</button>
+
+  <div id="searchResults"></div>
+
   <script>
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -386,6 +395,71 @@
 			loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
 		}
 	});
+
+  async function searchProducts() {
+  const query = document.getElementById("searchBox").value;
+  const res = await fetch("http://localhost:2000/api/search?q=" + encodeURIComponent(query));
+  const products = await res.json();
+
+  const resultDiv = document.getElementById("searchResults");
+  resultDiv.innerHTML = products.map(p => `
+    <div>
+      <h4>${p.name}</h4>
+      <p>${p.description}</p>
+      <strong>฿${p.price}</strong>
+    </div>
+  `).join("");
+  }
+
+  async function searchProducts() {
+  const query = document.getElementById("searchBox").value.trim();
+  if (!query) return;
+
+  try {
+    const response = await fetch(`http://localhost:2000/api/search?q=${encodeURIComponent(query)}`);
+    const results = await response.json();
+
+    const container = document.getElementById("products-row");
+    container.innerHTML = '';
+
+    if (results.length === 0) {
+      container.innerHTML = '<div class="col-12 text-center">No products found.</div>';
+    } else {
+      results.forEach(p => {
+        container.innerHTML += `
+          <div class="col-md-6 col-lg-3 ftco-animate">
+            <div class="product">
+              <a href="#" class="img-prod">
+                <img class="img-fluid" src="images/${p.image}" alt="${p.name}">
+                ${p.discount_price ? '<span class="status">Sale</span>' : ''}
+                <div class="overlay"></div>
+              </a>
+              <div class="text py-3 pb-4 px-3 text-center">
+                <h3><a href="#">${p.name}</a></h3>
+                <div class="d-flex">
+                  <div class="pricing">
+                    <p class="price">
+                      ${p.discount_price ? `<span class="mr-2 price-dc">$${p.price}</span><span class="price-sale">$${p.discount_price}</span>` : `$${p.price}`}
+                    </p>
+                  </div>
+                </div>
+                <div class="bottom-area d-flex px-3">
+                  <div class="m-auto d-flex">
+                    <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center"><span><i class="ion-ios-menu"></i></span></a>
+                    <a href="#" onclick='addToCart(${JSON.stringify(p)})' class="buy-now d-flex justify-content-center align-items-center mx-1"><span><i class="ion-ios-cart"></i></span></a>
+                    <a href="#" class="heart d-flex justify-content-center align-items-center"><span><i class="ion-ios-heart"></i></span></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      });
+    }
+  } catch (err) {
+    console.error('Search error:', err);
+    alert("เกิดข้อผิดพลาดในการค้นหา");
+  }
+}
     
     </script>
   </body>
