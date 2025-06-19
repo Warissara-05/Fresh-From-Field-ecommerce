@@ -69,7 +69,8 @@
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
 	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
 			      <li class="nav-item"><a href="login.html" class="nav-link" id="login-btn"><span class="icon-login"></span>Login</a></li>
-
+            <li class="nav-item"><a href="admin.html" class="nav-link">Admin</a></li>
+            
 	        </ul>
 	      </div>
 	    </div>
@@ -242,20 +243,33 @@
   <script>
 
   document.addEventListener("DOMContentLoaded", () => {
-    const categoryButtons = document.querySelectorAll(".product-category a");
+  const params = new URLSearchParams(window.location.search);
+  const categoryFromUrl = params.get('category');
+  const categoryButtons = document.querySelectorAll(".product-category a");
 
-    categoryButtons.forEach(button => {
-      button.addEventListener("click", (e) => {
-        e.preventDefault();
-        categoryButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        loadProducts(button.textContent.trim());
-      });
+  let initialCategory = 'All';
+  if (categoryFromUrl) {
+    initialCategory = categoryFromUrl;
+    categoryButtons.forEach(btn => {
+      if (btn.textContent.trim().toLowerCase() === categoryFromUrl.toLowerCase()) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
     });
+  }
 
-    loadProducts('All');
+  categoryButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      categoryButtons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      loadProducts(button.textContent.trim());
+    });
   });
 
+  loadProducts(initialCategory);
+});
   async function loadProducts(category) {
     try {
       const response = await fetch(`http://localhost:2000/api/products?category=${category}`);
