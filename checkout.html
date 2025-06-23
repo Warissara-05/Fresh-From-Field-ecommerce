@@ -66,6 +66,8 @@
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
 	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
 			  <li class="nav-item"><a href="login.html" class="nav-link" id="login-btn"><span class="icon-login"></span>Login</a></li>
+         <li class="nav-item"><a href="admin.html" class="nav-link">Admin</a></li>
+
 
 	        </ul>
 	      </div>
@@ -185,12 +187,9 @@
 						</p>
 						<p class="d-flex">
   							<span>Delivery</span>
-  							<span id="delivery-price">$0.00</span>
+  							<span >Free</span>
 						</p>
-						<p class="d-flex">
-							<span>Discount</span>
-							<span id="discount-price">$0.00</span>
-						</p>
+						
 						<hr>
 						<p class="d-flex total-price">
 							<span>Total</span>
@@ -230,7 +229,7 @@
 											</div>
 										</div>
 									</div>
-									<p><button type="button" onclick="submitOrder()" class="btn btn-primary py-3 px-4">Place an order</button></p>
+									<p><a type="button" onclick="submitOrder()" href="order-confirmation.html" class="btn btn-primary py-3 px-4">Place an order</a></p>
 								</div>
 	          	</div>
 	          </div>
@@ -445,7 +444,7 @@
   orderItemsDiv.innerHTML = '';
 
   if (cart.length === 0) {
-    orderItemsDiv.innerHTML = '<p>ไม่มีสินค้าในตะกร้า</p>';
+    orderItemsDiv.innerHTML = '<p>Your cart is empty</p>';
     return;
   }
 
@@ -553,14 +552,10 @@ document.addEventListener("DOMContentLoaded", () => {
 function updatePriceSummary() {
   const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const delivery = 0; // ถ้ามีค่าจัดส่งจริงสามารถใส่ได้
-  const discount = subtotal >= 50 ? 5 : 0; // ตัวอย่าง: ถ้าซื้อเกิน 50 ลด 5 เหรียญ
-  const total = subtotal + delivery - discount;
+  const total = subtotal ;
 
   // แสดงผลราคาที่อัปเดต
   document.getElementById("subtotal-price").textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById("delivery-price").textContent = `$${delivery.toFixed(2)}`;
-  document.getElementById("discount-price").textContent = `$${discount.toFixed(2)}`;
   document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
 }
 

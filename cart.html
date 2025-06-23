@@ -68,6 +68,8 @@
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
 	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
 			  <li class="nav-item"><a href="login.html" class="nav-link" id="login-btn"><span class="icon-login"></span>Login</a></li>
+			   <li class="nav-item"><a href="admin.html" class="nav-link">Admin</a></li>
+
 
 	        </ul>
 	      </div>
@@ -273,7 +275,7 @@
 
 	if (cartItems.length === 0) {
 	console.log("Cart is empty, refreshing...");
-    cartContainer.innerHTML = '<h6 class="text-center">Your cart is empty.</h6>';
+    cartContainer.innerHTML = '<h6 class="text-center">Your cart is empty</h6>';
     totalPriceEl.textContent = '฿0.00';
 	subtotalDetailsEl.innerHTML = '฿0.00';
 	totalSummaryEl.textContent = '฿0.00';
