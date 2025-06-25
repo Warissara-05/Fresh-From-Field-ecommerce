@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const path = require('path')
+const path = require('path');
 const fs = require('fs');
 
 
@@ -20,15 +20,6 @@ app.use('/api/search', require('./routes/search.js'));
 app.use('/api/checkout', require('./routes/checkout.js'));
 
 
-/*  app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/shop.html');  // ให้ส่งไฟล์ shop.html หรือไฟล์ที่ต้องการแสดง
-});  */
-
-
-app.listen(PORT, () => {
-    console.log("Server running at http://localhost:"+PORT);
-})
-
 app.get('/api/users', (req, res) => {
   const filePath = path.join(__dirname, 'data/user.json');
   fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -42,3 +33,8 @@ app.get('/api/users', (req, res) => {
     }
   });
 });
+
+
+app.listen(PORT, () => {
+    console.log("Server running at http://localhost:"+PORT);
+})

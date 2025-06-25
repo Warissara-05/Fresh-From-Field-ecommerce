@@ -229,7 +229,7 @@
 											</div>
 										</div>
 									</div>
-									<p><a type="button" onclick="submitOrder()" href="order-confirmation.html" class="btn btn-primary py-3 px-4">Place an order</a></p>
+									<p><button type="button" onclick="submitOrder()"  class="btn btn-primary py-3 px-4">Place an order</button></p>
 								</div>
 	          	</div>
 	          </div>
@@ -373,12 +373,12 @@
     const email = sessionStorage.getItem('loggedInUserEmail');
 
     if (cart.length === 0) {
-      alert("ไม่มีสินค้าในตะกร้า");
+      alert("Your cart is empty");
       return;
     }
 
     if (!email) {
-      alert("กรุณาเข้าสู่ระบบก่อนทำการสั่งซื้อ");
+      alert("Please log in before placing an order");
       return;
     }
 
@@ -410,7 +410,7 @@
       }
 
       const result = await response.json();
-      alert("สั่งซื้อสำเร็จ! เลขที่คำสั่งซื้อ #" + result.order_id);
+      alert("Order placed successfully! Your order number is #" + result.order_id);
 
       // เคลียร์ตะกร้าหลังสั่งซื้อ
       sessionStorage.removeItem('cart');
@@ -421,7 +421,7 @@
 
     } catch (error) {
       console.error("Checkout Error:", error);
-      alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+      alert("An error occurred while connecting to the server.");
     }
   }
 
@@ -483,7 +483,7 @@ function validateForm() {
   const requiredFields = document.querySelectorAll('#checkout-form input.form-control');
   for (let input of requiredFields) {
     if (!input.value.trim()) {
-      alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+      alert('Please fill in all required fields');
       input.focus();
       return false;
     }
@@ -491,7 +491,7 @@ function validateForm() {
 
   const termsAccepted = document.querySelector('.checkbox input[type="checkbox"]');
   if (!termsAccepted?.checked) {
-    alert('กรุณายอมรับเงื่อนไขก่อนทำการสั่งซื้อ');
+    alert('Please accept the terms and conditions before placing an order');
     return false;
   }
 
@@ -505,7 +505,7 @@ async function submitOrder() {
   const email = sessionStorage.getItem('loggedInUserEmail');
 
   if (!email) {
-    alert("กรุณาเข้าสู่ระบบก่อนทำการสั่งซื้อ");
+    alert("Please log in before placing an order");
     return;
   }
 
@@ -518,30 +518,10 @@ async function submitOrder() {
     total_price,
     items: cart
   };
+  sessionStorage.setItem("orderData", JSON.stringify(orderData));
+  window.location.href = "confirm.html";
 
-  try {
-    const response = await fetch("http://localhost:2000/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orderData)
-    });
 
-    if (!response.ok) {
-      const error = await response.json();
-      alert("เกิดข้อผิดพลาด: " + (error.error || "ไม่สามารถสั่งซื้อได้"));
-      return;
-    }
-
-    const result = await response.json();
-    alert("สั่งซื้อสำเร็จ! เลขที่คำสั่งซื้อ #" + result.order_id);
-
-    sessionStorage.removeItem('cart');
-    updateCartCount();
-    window.location.href = "order-confirmation.html";
-  } catch (error) {
-    console.error("Checkout Error:", error);
-    alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
-  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

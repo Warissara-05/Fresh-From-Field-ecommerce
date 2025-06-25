@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Confirmation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 40px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #total-price {
+      font-size: 2em;
+      color: #4CAF50;
+      margin: 20px 0;
+    }
+
+    .btn-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button.back {
+      background-color: #ccc;
+    }
+
+    button.back:hover {
+      background-color: #bbb;
+    }
+
+    button.confirm {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    button.confirm:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Confirm Your Order</h2>
+    <p>Please review the total amount before proceeding to payment.</p>
+    
+    <div id="total-price">$0.00</div>
+
+    <div class="btn-group">
+      <button class="back" onclick="goBack()">Go Back</button>
+      <button class="confirm" onclick="submitOrder()" >Proceed to Payment</button>
+    </div>
+  </div>
+
+  <script>
+    function calculateTotalPrice() {
+      const orderData = JSON.parse(sessionStorage.getItem("orderData"));
+      if (!orderData) {
+        document.getElementById('total-price').textContent = "$0.00";
+        return;
+      }
+      document.getElementById('total-price').textContent = `$${orderData.total_price.toFixed(2)}`;
+    }
+
+    function goBack() {
+      sessionStorage.removeItem('orderData'); // เคลียร์ข้อมูลก่อนกลับ
+      window.location.href = 'checkout.html';
+    }
+
+    async function submitOrder() {
+      const orderData = JSON.parse(sessionStorage.getItem("orderData"));
+      if (!orderData) {
+        alert("Order data not found. Please go back and fill in the order.");
+        return;
+      }
+      try {
+        const response = await fetch("http://localhost:2000/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData)
+        });
+        if (!response.ok) {
+          const error = await response.json();
+          alert("Error: " + (error.error || "Could not place order"));
+          return;
+        }
+        const result = await response.json();
+    alert("Order placed successfully! Your order number is #" + result.order_id);
+    sessionStorage.removeItem('cart');
+    sessionStorage.removeItem('orderData');
+
+  window.location.href = "order-confirmation.html";
+
+  } catch (error) {
+    console.error("Checkout Error:", error);
+    alert("An error occurred while connecting to the server.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      calculateTotalPrice();
+    });
+  </script>
+</body>
+</html>
