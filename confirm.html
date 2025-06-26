@@ -114,7 +114,7 @@
           return;
         }
         const result = await response.json();
-    alert("Order placed successfully! Your order number is #" + result.order_id);
+        
     sessionStorage.removeItem('cart');
     sessionStorage.removeItem('orderData');
 
