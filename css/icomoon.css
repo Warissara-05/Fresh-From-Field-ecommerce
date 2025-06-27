@@ -3753,6 +3753,9 @@
 .icon-shopping_cart:before {
   content: "\e8cc";
 }
+.icon-login:before{
+  content: "\e7fd";
+}
 .icon-local_hospital:before {
   content: "\e548";
 }

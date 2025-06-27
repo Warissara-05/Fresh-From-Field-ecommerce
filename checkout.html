@@ -52,29 +52,22 @@
     </div>
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Vegefoods</a>
+	      <a class="navbar-brand" href="index.html">Fresh From Field</a>
 	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
 	        <span class="oi oi-menu"></span> Menu
 	      </button>
 
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-	          <li class="nav-item active dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown04">
-              	<a class="dropdown-item" href="shop.html">Shop</a>
-              	<a class="dropdown-item" href="wishlist.html">Wishlist</a>
-                <a class="dropdown-item" href="product-single.html">Single Product</a>
-                <a class="dropdown-item" href="cart.html">Cart</a>
-                <a class="dropdown-item" href="checkout.html">Checkout</a>
-              </div>
-            </li>
+	          <li class="nav-item active"><a href="index.html" class="nav-link">Home</a></li>
+	         <li class="nav-item"><a href="shop.html" class="nav-link">Shop</a></li>
 	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
 	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
-			  <li class="nav-item"><a href="login.html" class="nav-link">Login</a></li>
+	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
+			  <li class="nav-item"><a href="login.html" class="nav-link" id="login-btn"><span class="icon-login"></span>Login</a></li>
+         <li class="nav-item"><a href="admin.html" class="nav-link">Admin</a></li>
+
 
 	        </ul>
 	      </div>
@@ -97,7 +90,11 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-xl-7 ftco-animate">
-						<form action="#" class="billing-form">
+			<div id="order-summary" class="cart-detail cart-total p-3 p-md-4">
+  				<h3 class="billing-heading mb-4">Your Order</h3>
+  					<div id="order-items"></div>
+						</div>
+						<form id="checkout-form" class="billing-form">
 							<h3 class="mb-4 billing-heading">Billing Details</h3>
 	          	<div class="row align-items-end">
 	          		<div class="col-md-6">
@@ -185,23 +182,21 @@
 	          		<div class="cart-detail cart-total p-3 p-md-4">
 	          			<h3 class="billing-heading mb-4">Cart Total</h3>
 	          			<p class="d-flex">
-		    						<span>Subtotal</span>
-		    						<span>$20.60</span>
-		    					</p>
-		    					<p class="d-flex">
-		    						<span>Delivery</span>
-		    						<span>$0.00</span>
-		    					</p>
-		    					<p class="d-flex">
-		    						<span>Discount</span>
-		    						<span>$3.00</span>
-		    					</p>
-		    					<hr>
-		    					<p class="d-flex total-price">
-		    						<span>Total</span>
-		    						<span>$17.60</span>
-		    					</p>
-								</div>
+  							<span>Subtotal</span>
+  							<span id="subtotal-price">$0.00</span>
+						</p>
+						<p class="d-flex">
+  							<span>Delivery</span>
+  							<span >Free</span>
+						</p>
+						
+						<hr>
+						<p class="d-flex total-price">
+							<span>Total</span>
+							<span id="total-price">$0.00</span>
+						</p>
+
+					</div>
 	          	</div>
 	          	<div class="col-md-12">
 	          		<div class="cart-detail p-3 p-md-4">
@@ -234,7 +229,7 @@
 											</div>
 										</div>
 									</div>
-									<p><a href="#"class="btn btn-primary py-3 px-4">Place an order</a></p>
+									<p><button type="button" onclick="submitOrder()"  class="btn btn-primary py-3 px-4">Place an order</button></p>
 								</div>
 	          	</div>
 	          </div>
@@ -358,41 +353,260 @@
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
 
-  <script>
-		$(document).ready(function(){
+	<script>
+	function updateCartCount() {
+		const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+		const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+		
+		const cartCountEl = document.getElementById('cart-count');
+		if (cartCountEl) {
+		cartCountEl.textContent = totalCount;
+		}
+	}
 
-		var quantitiy=0;
-		   $('.quantity-right-plus').click(function(e){
-		        
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		            
-		            $('#quantity').val(quantity + 1);
+	document.addEventListener('DOMContentLoaded', () => {
+		updateCartCount();
+	});
 
-		          
-		            // Increment
-		        
-		    });
+	async function submitOrder() {
+    const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const email = sessionStorage.getItem('loggedInUserEmail');
 
-		     $('.quantity-left-minus').click(function(e){
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		      
-		            // Increment
-		            if(quantity>0){
-		            $('#quantity').val(quantity - 1);
-		            }
-		    });
-		    
-		});
+    if (cart.length === 0) {
+      alert("Your cart is empty");
+      return;
+    }
+
+    if (!email) {
+      alert("Please log in before placing an order");
+      return;
+    }
+
+    const total_price = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    // ใส่ชื่อผู้ใช้แบบจำลอง (หรือให้กรอกในฟอร์มก็ได้)
+    const customer_name = "ลูกค้าไม่มีชื่อ";
+
+    const orderData = {
+      customer_name,
+      email,
+      total_price,
+      items: cart
+    };
+
+    try {
+      const response = await fetch("http://localhost:2000/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert("เกิดข้อผิดพลาด: " + (error.error || "ไม่สามารถสั่งซื้อได้"));
+        return;
+      }
+
+      const result = await response.json();
+      alert("Order placed successfully! Your order number is #" + result.order_id);
+
+      // เคลียร์ตะกร้าหลังสั่งซื้อ
+      sessionStorage.removeItem('cart');
+      updateCartCount();
+
+      // เปลี่ยนหน้า หรือแสดงข้อความต่อก็ได้
+      window.location.href = "order-confirmation.html";
+
+    } catch (error) {
+      console.error("Checkout Error:", error);
+      alert("An error occurred while connecting to the server.");
+    }
+  }
+
+  function updateCartCount() {
+    const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCountEl = document.getElementById('cart-count');
+    if (cartCountEl) {
+      cartCountEl.textContent = totalCount;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    updateCartCount();
+  });
+
+  function renderCartItems() {
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  const orderItemsDiv = document.getElementById('order-items');
+  orderItemsDiv.innerHTML = '';
+
+  if (cart.length === 0) {
+    orderItemsDiv.innerHTML = '<p>Your cart is empty</p>';
+    return;
+  }
+
+  cart.forEach((item, index) => {
+    const itemDiv = document.createElement('div');
+    itemDiv.classList.add('d-flex', 'justify-content-between', 'mb-2');
+    itemDiv.innerHTML = `
+      <div>${item.name} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</div>
+      <div>
+        <button class="btn btn-sm btn-outline-secondary" onclick="decreaseItem(${index})">-</button>
+		<button class="btn btn-sm btn-outline-primary" onclick="increaseItem(${index})">+</button>
+		<button class="btn btn-sm btn-outline-danger" onclick="removeItem(${index})">ลบ</button>
+      </div>
+    `;
+    orderItemsDiv.appendChild(itemDiv);
+  });
+}
+
+function removeItem(index) {
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  cart.splice(index, 1);
+  sessionStorage.setItem('cart', JSON.stringify(cart));
+  renderCartItems();
+  updateCartCount();
+}
+
+function increaseItem(index) {
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  cart[index].quantity += 1;
+  sessionStorage.setItem('cart', JSON.stringify(cart));
+  renderCartItems();
+  updateCartCount();
+}
+
+function validateForm() {
+  const requiredFields = document.querySelectorAll('#checkout-form input.form-control');
+  for (let input of requiredFields) {
+    if (!input.value.trim()) {
+      alert('Please fill in all required fields');
+      input.focus();
+      return false;
+    }
+  }
+
+  const termsAccepted = document.querySelector('.checkbox input[type="checkbox"]');
+  if (!termsAccepted?.checked) {
+    alert('Please accept the terms and conditions before placing an order');
+    return false;
+  }
+
+  return true;
+}
+
+async function submitOrder() {
+  if (!validateForm()) return;
+
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  const email = sessionStorage.getItem('loggedInUserEmail');
+
+  if (!email) {
+    alert("Please log in before placing an order");
+    return;
+  }
+
+  const total_price = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const customer_name = document.querySelector('input[placeholder=""]')?.value || 'ลูกค้า';
+
+  const orderData = {
+    customer_name,
+    email,
+    total_price,
+    items: cart
+  };
+  sessionStorage.setItem("orderData", JSON.stringify(orderData));
+  window.location.href = "confirm.html";
+
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  updateCartCount();
+  renderCartItems();
+});
+
+function updatePriceSummary() {
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = subtotal ;
+
+  // แสดงผลราคาที่อัปเดต
+  document.getElementById("subtotal-price").textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
+}
+
+// เรียกใช้เมื่อโหลดหน้า
+document.addEventListener("DOMContentLoaded", () => {
+  updateCartCount();
+  renderCartItems();
+  updatePriceSummary();
+});
+
+// เรียกใช้ทุกครั้งที่มีการเพิ่ม/ลบสินค้า
+function removeItem(index) {
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  cart.splice(index, 1);
+  sessionStorage.setItem('cart', JSON.stringify(cart));
+  renderCartItems();
+  updateCartCount();
+  updatePriceSummary();
+}
+
+function increaseItem(index) {
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  cart[index].quantity += 1;
+  sessionStorage.setItem('cart', JSON.stringify(cart));
+  renderCartItems();
+  updateCartCount();
+  updatePriceSummary();
+}
+
+function decreaseItem(index) {
+  const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+  if (cart[index].quantity > 1) {
+    cart[index].quantity -= 1;
+  } else {
+    cart.splice(index, 1); // ถ้าเหลือ 1 แล้วลดอีกก็ลบเลย
+  }
+  sessionStorage.setItem('cart', JSON.stringify(cart));
+  renderCartItems();
+  updateCartCount();
+  updatePriceSummary();
+}
+
+	 document.addEventListener('DOMContentLoaded', () => {
+		const loginBtn = document.getElementById('login-btn'); 
+		const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+		const userEmail = sessionStorage.getItem('loggedInUserEmail');
+
+		console.log("isLoggedIn:", isLoggedIn);
+		console.log("userEmail:", userEmail);
+
+		if (isLoggedIn && userEmail) {
+			fetch('http://localhost:2000/api/users')
+			.then(response => response.json())
+			.then(users => {
+				const user = users.find(u => u.email === userEmail);
+				if (user) {
+				loginBtn.innerHTML = `<span class="icon-login"></span>${user.fname}`;
+				loginBtn.href = "#"; 
+				} else {
+				loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+				}
+			})
+			.catch(err => {
+				console.error('Error loading user data:', err);
+				loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+			});
+		} else {
+			loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+		}
+	});
+
 	</script>
     
   </body>

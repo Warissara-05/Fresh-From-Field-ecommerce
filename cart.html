@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/cart.css">
+	
   </head>
   <body class="goto-here">
 		<div class="py-1 bg-primary">
@@ -52,29 +54,22 @@
     </div>
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Vegefoods</a>
+	      <a class="navbar-brand" href="index.html">Fresh From Field</a>
 	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
 	        <span class="oi oi-menu"></span> Menu
 	      </button>
 
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-	          <li class="nav-item active dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown04">
-              	<a class="dropdown-item" href="shop.html">Shop</a>
-              	<a class="dropdown-item" href="wishlist.html">Wishlist</a>
-                <a class="dropdown-item" href="product-single.html">Single Product</a>
-                <a class="dropdown-item" href="cart.html">Cart</a>
-                <a class="dropdown-item" href="checkout.html">Checkout</a>
-              </div>
-            </li>
+	          <li class="nav-item active"><a href="index.html" class="nav-link">Home</a></li>
+	         <li class="nav-item"><a href="shop.html" class="nav-link">Shop</a></li>
 	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
 	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
 	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
-			  <li class="nav-item"><a href="login.html" class="nav-link">Login</a></li>
+	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span><span id="cart-count">[0]</span></a></li>
+			  <li class="nav-item"><a href="login.html" class="nav-link" id="login-btn"><span class="icon-login"></span>Login</a></li>
+			   <li class="nav-item"><a href="admin.html" class="nav-link">Admin</a></li>
+
 
 	        </ul>
 	      </div>
@@ -93,123 +88,49 @@
       </div>
     </div>
 
-    <section class="ftco-section ftco-cart">
+    <section class="cart-section">
 			<div class="container">
 				<div class="row">
     			<div class="col-md-12 ftco-animate">
     				<div class="cart-list">
-	    				<table class="table">
+	    				<table class="table table-bordered text-center">
 						    <thead class="thead-primary">
 						      <tr class="text-center">
-						        <th>&nbsp;</th>
-						        <th>&nbsp;</th>
+								<th>&nbsp;</th>
 						        <th>Product name</th>
 						        <th>Price</th>
 						        <th>Quantity</th>
 						        <th>Total</th>
+								<th>Remove</th>
 						      </tr>
 						    </thead>
-						    <tbody>
-						      <tr class="text-center">
-						        <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
-						        
-						        <td class="image-prod"><div class="img" style="background-image:url(images/product-3.jpg);"></div></td>
-						        
-						        <td class="product-name">
-						        	<h3>Bell Pepper</h3>
-						        	<p>Far far away, behind the word mountains, far from the countries</p>
-						        </td>
-						        
-						        <td class="price">$4.90</td>
-						        
-						        <td class="quantity">
-						        	<div class="input-group mb-3">
-					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-					          	</div>
-					          </td>
-						        
-						        <td class="total">$4.90</td>
-						      </tr><!-- END TR-->
-
-						      <tr class="text-center">
-						        <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
-						        
-						        <td class="image-prod"><div class="img" style="background-image:url(images/product-4.jpg);"></div></td>
-						        
-						        <td class="product-name">
-						        	<h3>Bell Pepper</h3>
-						        	<p>Far far away, behind the word mountains, far from the countries</p>
-						        </td>
-						        
-						        <td class="price">$15.70</td>
-						        
-						        <td class="quantity">
-						        	<div class="input-group mb-3">
-					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-					          	</div>
-					          </td>
-						        
-						        <td class="total">$15.70</td>
-						      </tr><!-- END TR-->
+						    <tbody  id="cart-table-body">
+						     <!-- Items will be inserted here -->
 						    </tbody>
 						  </table>
-					  </div>
+						  <div id="cart-container" ></div>
+						<div class="text-right">
+							<h4>Total Price: <span id="cart-total">฿0</span></h4>
+						</div>
+					</div>
     			</div>
     		</div>
-    		<div class="row justify-content-end">
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+    			
+    			<div class="col-lg-4 mt-md-5 cart-wrap ftco-animate">
     				<div class="cart-total mb-3">
-    					<h3>Coupon Code</h3>
-    					<p>Enter your coupon code if you have one</p>
-  						<form action="#" class="info">
-	              <div class="form-group">
-	              	<label for="">Coupon code</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	            </form>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
-    			</div>
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Estimate shipping and tax</h3>
-    					<p>Enter your destination to get a shipping estimate</p>
-  						<form action="#" class="info">
-	              <div class="form-group">
-	              	<label for="">Country</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">State/Province</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">Zip/Postal Code</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	            </form>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Estimate</a></p>
-    			</div>
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Cart Totals</h3>
+    					<h4>Cart Totals</h4>
     					<p class="d-flex">
     						<span>Subtotal</span>
-    						<span>$20.60</span>
+    						<span id="cart-subtotal-details" style="font-size: 14px;"></span>
     					</p>
     					<p class="d-flex">
     						<span>Delivery</span>
-    						<span>$0.00</span>
-    					</p>
-    					<p class="d-flex">
-    						<span>Discount</span>
-    						<span>$3.00</span>
+    						<span>Free</span>
     					</p>
     					<hr>
     					<p class="d-flex total-price">
     						<span>Total</span>
-    						<span>$17.60</span>
+    						<span id="cart-total-summary">฿0.00</span>
     					</p>
     				</div>
     				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
@@ -334,40 +255,152 @@
   <script src="js/main.js"></script>
 
   <script>
-		$(document).ready(function(){
 
-		var quantitiy=0;
-		   $('.quantity-right-plus').click(function(e){
-		        
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		            
-		            $('#quantity').val(quantity + 1);
+	function renderCart() {
+	const tbody = document.getElementById('cart-table-body');
+	const totalPriceEl = document.getElementById('cart-total');
+	const cartContainer = document.getElementById('cart-container');
+	const subtotalDetailsEl = document.getElementById('cart-subtotal-details');
+	const totalSummaryEl = document.getElementById('cart-total-summary');
+	tbody.innerHTML = '';
 
-		          
-		            // Increment
-		        
-		    });
+	let cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
 
-		     $('.quantity-left-minus').click(function(e){
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		      
-		            // Increment
-		            if(quantity>0){
-		            $('#quantity').val(quantity - 1);
-		            }
-		    });
-		    
+	// กรองข้อมูลที่ไม่มีชื่อหรือราคาหรือรูปภาพ
+	cartItems = cartItems.filter(item =>
+	item && item.name && item.price !== null && item.image
+	);
+
+	sessionStorage.setItem('cart', JSON.stringify(cartItems));
+
+	if (cartItems.length === 0) {
+	console.log("Cart is empty, refreshing...");
+    cartContainer.innerHTML = '<h6 class="text-center">Your cart is empty</h6>';
+    totalPriceEl.textContent = '฿0.00';
+	subtotalDetailsEl.innerHTML = '฿0.00';
+	totalSummaryEl.textContent = '฿0.00';
+
+    return;
+  }
+
+	let total = 0;
+	let subtotalDetailsHTML = '';
+
+	cartItems.forEach((item, index) => {
+		const itemTotal = item.price * item.quantity;
+		total += itemTotal;
+		subtotalDetailsHTML += `<div>${item.name} x ${item.quantity} = ฿${itemTotal.toFixed(2)}</div>`;
+
+		const tr = document.createElement('tr');
+		tr.innerHTML = `
+		<td><img src="${item.image}" width="70" height="70"></td>
+		<td>${item.name}</td>
+		<td>฿${item.price.toFixed(2)}</td>
+		<td>
+			<input type="number" value="${item.quantity}" min="1" class="form-control quantity-input" data-index="${index}">
+		</td>
+		<td>฿${itemTotal.toFixed(2)}</td>
+		<td><button class="btn btn-danger btn-sm remove-item" data-index="${index}">x</button></td>
+		`;
+		tbody.appendChild(tr);
+	});
+
+	totalPriceEl.textContent = `฿${total.toFixed(2)}`;
+	subtotalDetailsEl.innerHTML = subtotalDetailsHTML;
+	totalSummaryEl.textContent = `฿${total.toFixed(2)}`;
+
+	}
+
+		// เปลี่ยนจำนวนสินค้า
+		document.addEventListener('change', function (e) {
+			if (e.target.classList.contains('quantity-input')) {
+			const index = e.target.getAttribute('data-index');
+			const newQty = parseInt(e.target.value);
+
+			let cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+			if (newQty >= 1) {
+				cartItems[index].quantity = newQty;
+				sessionStorage.setItem('cart', JSON.stringify(cartItems));
+				renderCart();
+			}
+			}
 		});
+
+		// ลบสินค้า
+		document.addEventListener('click', function (e) {
+			if (e.target.classList.contains('remove-item')) {
+			const index = e.target.getAttribute('data-index');
+			let cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+			cartItems.splice(index, 1);
+			sessionStorage.setItem('cart', JSON.stringify(cartItems));
+			renderCart();
+			updateCartCount(); 
+			}
+		});
+
+		// โหลดตะกร้าครั้งแรก
+		document.addEventListener('DOMContentLoaded', () => {
+			renderCart();       
+			updateCartCount();  
+		});
+
+		function updateCartCount() {
+			const cartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+			const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+			
+			const cartCountEl = document.getElementById('cart-count');
+			if (cartCountEl) {
+			cartCountEl.textContent = totalCount;
+			}
+		}
+
+		let isRefreshing = false;
+
+		// ตรวจจับว่าผู้ใช้กำลังรีเฟรช
+		window.addEventListener('beforeunload', function () {
+			isRefreshing = true;
+		});
+
+		// ตรวจจับการปิดแท็บโดยไม่รีเฟรช
+		window.addEventListener('pagehide', function () {
+			if (!isRefreshing) {
+				sessionStorage.removeItem('cart');
+			}
+		});
+
+		document.addEventListener('DOMContentLoaded', () => {
+			updateCartCount();
+		});
+
+		document.addEventListener('DOMContentLoaded', () => {
+			const loginBtn = document.getElementById('login-btn'); 
+			const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+			const userEmail = sessionStorage.getItem('loggedInUserEmail');
+
+			console.log("isLoggedIn:", isLoggedIn);
+			console.log("userEmail:", userEmail);
+
+			if (isLoggedIn && userEmail) {
+				fetch('http://localhost:2000/api/users')
+				.then(response => response.json())
+				.then(users => {
+					const user = users.find(u => u.email === userEmail);
+					if (user) {
+					loginBtn.innerHTML = `<span class="icon-login"></span>${user.fname}`;
+					loginBtn.href = "#"; 
+					} else {
+					loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+					}
+				})
+				.catch(err => {
+					console.error('Error loading user data:', err);
+					loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+				});
+			} else {
+				loginBtn.innerHTML = `<span class="icon-login"></span>Login`;
+			}
+		});
+
 	</script>
     
   </body>
